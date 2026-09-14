@@ -8,7 +8,7 @@ This directory contains the source code of a simulation program based on the hie
 | --- | --- |
 | `software.tar.gz` | Program source code; unpacks to `src.sav92_1/` |
 | `case_steady/` | Steady-state case: `input`, `output`, and the result `rho_spa.sav` |
-| `case_danmics/` | Dynamics (time-evolution) case: `input`, `output`, `curr.data` |
+| `case_dynamics/` | Dynamics (time-evolution) case: `input`, `output`, `curr.data` |
 
 ## 1. Compiling and installing the software
 
