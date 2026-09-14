@@ -1,0 +1,8 @@
+# Large run-time output: exceeds GitHub's 100 MB per-file hard limit
+case_dynamics/curr.data
+case_dynamics/output
+
+# OS / editor junk
+Thumbs.db
+desktop.ini
+.DS_Store

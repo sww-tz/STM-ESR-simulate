@@ -1,0 +1,59 @@
+    2   ! init: job type -- 1 = dynamics (time evolution), 2 = steady state.  [this case: 2 = steady state, produces rho_spa.sav]
+    3   ! ntier: number of HEOM tiers
+    12  ! nmats: number of Pade terms (or pseudo-Fermi-distribution terms); the more terms, the slower the time evolution
+    1   ! norbs: number of system orbitals
+    2   ! nspin: number of spin directions (spin degrees of freedom)
+    2   ! nalf: number of leads (electrodes)
+12    12   ! bandwidth of each lead (from DFT, ~Omega); 
+1.077419e1 0.1   ! scaling factors -- NOT used (they are overwritten by the code, cf. lines 34-35)
+1.47    1.47   ! temperature 1/beta (~1 K ~ 1e-4 eV), taken as the unit "1"
+0.000000E+000    0.000000E+000 -50 -50   ! DC voltages (chemical-potential shifts): substrate up/down, tip up/down
+2000.d0   ! tmax: total time of propagation
+0.0008   ! dt: time step
+
+$para1    eup=-1800   edown=-1800   uu= 5000.d0 
+              gx1=0.6617d0        $end   ! eup/edown: SOMO/SUMO level energies; uu: Coulomb repulsion (also scaled, >10x gx1); gx1: resonance (peak) frequency, the most important number (unit ~x eV, magnitude 0.x-x)
+
+$converge    maxit0=10000    crit= 1.00E-008    $end   ! steady-state solver: maximum number of iterations and convergence criterion
+
+$guess0    lbzman=T    $end   ! initial guess for rho (l=bzman: use the Boltzmann distribution)
+
+$jobinfo    lsparse=.true.    psdfff=F    itype_fff=3    lscreen=T    $end   ! job options: sparse solver; fff-scheme type; screening
+
+
+$field    fieldtype=3    lreadomega=T    leshift_dc=T    lphase=T    $end   ! external field: type 3; read omega; dc energy shift; use phase
+-0.6617d0  -0.6617d0  -0.6617d0  -0.6617d0   ! sweep (scan) frequency; scan within about +/-2.5% around the peak position
+0.d0    0.d0    -50  -50   ! DC voltages; must be consistent with line 10
+0.d0    0.d0    0.d0    0.d0   ! phase-adjustment parameters (not used)
+pulsed_energy_shift  2  1   ! the AC voltage is applied to the 2nd electrode (tip)
+0.d0    4000.d0     -30   ! start time, end time and amplitude of the AC voltage (amplitude between gx1 and eup)
+
+
+
+$resume    lresume=    T    nresume=    400000     icont=0    $end   ! restart options: 400000 steps; icont=0 (start a new run)
+
+$bathcorr    lspcor=    T    $end   ! bath-correlation options
+1.077419e2 1.077417e2   ! substrate up/down coupling: Lorentzian gamma (height), i.e. the substrate coupling strength; the substrate is usually spin-degenerate (Gamma_up = Gamma_dw)
+1.9  0.1   ! tip up/down coupling: Lorentzian gamma; the tip is usually magnetic (spin non-degenerate) and its coupling should be much smaller than the substrate one
+
+$project    lproj=T    nproji=1    nprojf=3    $end   ! projection: from orbital 1 to orbital 3
+
+!
+! NOTES
+! - e, Vac and Vrf are charge-related energies; all the others are spin-related. The former can be scaled, but must be clearly larger than the spin energies.
+! - More Pade terms -> slower time evolution.
+! - Run the steady state first and check convergence: the up and down occupations must be equal . Check that the output contains "rho is found OK!"; use grep relative to check the quality of the Pade expansion (the smaller the better).
+! - The steady-state run usually takes a few hours. Check the evolution of the voltage.
+! - During the dynamics run the current is written continuously; check that it does not differ by orders of magnitude from the steady state, to make sure the data have not diverged (a large time step can easily make it blow up).
+! - The oscillation frequency corresponds to the ESR frequency, and the time-evolution frequency to the Rabi frequency. Plot after the signal becomes stationary, then average over time to obtain one point; combining points at different frequencies gives the simulated ESR map.
+!
+! OUTPUT
+! - Steady state (output), the line starting with IVOUTPUT: left/right electrode voltages, up/down spin occupations, left/right electrode currents.
+! - Dynamics (output), e.g.:
+!     19999.9900  -0.501399E+000  0.648586E+000  0.498472E+000  0.497779E+000  0.190610E+000
+!     -> time, left/right electrode currents, up/down spin occupations.
+! - Dynamics (curr.data): col 1 = time; col 2/3 = left/right electrode voltages; col 4/5 = left/right electrode currents; col 6 = left+right current; col 7/8 = up/down spin occupations; col 9 = up+down occupations.
+!
+! POST-PROCESSING
+! - Set the sweep frequency, run the calculation, then average the local minima of the current (column 5 of curr.data) over the last part of the time evolution to obtain the STM-ESR current at that frequency.
+! - Scanning over frequencies around the resonance gives the simulated STM-ESR map.

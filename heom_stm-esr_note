@@ -1,0 +1,53 @@
+    2  ##1动力学 2稳态
+    3  ##HEOM层数
+    3  ##pade函数数目，不超过10个
+    1  ##轨道数目
+    2  ##自旋自由度
+    2  ##电级数目
+12  12 ##bandwith 来自dft计算的ommga
+1.077419e1 0.1     ##放大系数 没用，实际读取34 行
+1.47    1.47 ##作为单位“1”
+0.000000E+000    0.000000E+000    -50.0d0    -50.0d0 ##直流电压，分别对应衬底和针尖的up和down的
+2000.d0        ##时间
+0.0008 ##步长
+
+$para1    eup=-1800   edown= -1800    uu= 5000.d0 ##SOMO和SUMO的能级和库伦排斥
+              gx1=-0.6617d0        $end  ##共振频率
+
+$converge    maxit0=10000    crit= 1.00E-008    $end
+
+$guess0    lbzman=T    $end
+
+$jobinfo    lsparse=.true.    psdfff=F    itype_fff=3    lscreen=T    $end
+
+$field    fieldtype=3    lreadomega=T    leshift_dc=T    lphase=T    $end
+.66170    .66170    .66170    .66170   ##扫描频率，
+0.d0    0.d0    -50.0d0    -50.0d0 ##直流电压，与第十行保持一致
+0.d0    0.d0    0.d0    0.d0 ##调相位用的，用不到
+pulsed_energy_shift  2  1 ##交流电压加在第2个电极(tip)上
+0.d0    2000.d0     -30d0 ##表交流电压施加的开始时间，结束时间，交流电压大小，交流电压 
+
+
+$resume    lresume=    T    nresume=    400000     icont=0    $end
+
+$bathcorr    lspcor=    T    $end
+1.077419e2 1.077417e2 ##衬底up和dw的耦合，洛伦兹的gamma  ！！！ 衬底的耦合强度
+1.9  0.1  ##针尖up和dw的耦合，洛伦兹的gamma ！！！针尖的耦合强度
+
+$project    lproj=T    nproji=1    nprojf=3    $end
+
+
+##e, Vac, and Vrf是电荷相关能量 别的是自旋相关能量 前者可以缩放，但是要比其余自旋能量明显大
+##pade数目越多，含时演化越慢
+
+##先做稳态，看有无达到收敛标准  output的IVOUTPUT所在行的倒数第三和第四个数位up和dw占据数，需要相同，检查output是否有 rho is found OK! grep relative 
+
+
+##稳态输出里，IVOUTPUT 所在行数据为左/右电极电压  上/下spin占据数 左/右电极电流
+##动力学输出里，output 
+##19999.9900   -0.501399E+000   0.648586E+000   0.498472E+000   0.497779E+000   0.190610E+000 时间 左/右电极电流，spin up/down占据数
+##动力学输出里，curr.data
+##第1列是时间， 第2/3列是左/电极电压 第4/5列是左/右电极电流 第6列是左+右电流 第7/8列是自旋up/down占据数 第9列是自旋up+dw占据数
+
+动力学计算里，调整input的扫描频率参数，计算得到得到curr.data，后处理第五列最后一段时间的局域电流极小值的平均值得到该频率下的STM-ESR电流信号
+计算扫描频率为共振频率附近的电流信号，最后得到STM-ESR的模拟图
