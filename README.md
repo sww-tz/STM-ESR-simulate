@@ -39,13 +39,13 @@ This directory contains the source code of a simulation program based on the hie
 **The steady-state calculation must be run first, followed by the dynamics calculation.** The steady-state run produces `rho_spa.sav`, which the dynamics run reads as its initial state, so the order cannot be reversed.
 
 1. Run the steady-state case `case_steady` to generate `rho_spa.sav`.
-2. Copy the generated `rho_spa.sav` into `case_danmics/`.
+2. Copy the generated `rho_spa.sav` into `case_dynamics/`.
 3. Run the dynamics case `case_danmics` to obtain the time-evolution results (such as `curr.data`).
 
 Submit the job from the corresponding case directory by redirecting the input and output:
 
 ```sh
-./heom_test2 < input > output &
+./heom-92 < input > output &
 ```
 
 (The executable name is determined by `NAME` in the Makefile; replace it with the actual name.)
