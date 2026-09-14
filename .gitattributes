@@ -1,0 +1,2 @@
+case_dynamics/curr.data filter=lfs diff=lfs merge=lfs -text
+case_dynamics/output filter=lfs diff=lfs merge=lfs -text

@@ -1,6 +1,5 @@
-# Large run-time output: exceeds GitHub's 100 MB per-file hard limit
-case_dynamics/curr.data
-case_dynamics/output
+# Large run-time output (case_dynamics/curr.data, case_dynamics/output)
+# is tracked with Git LFS; see .gitattributes.
 
 # OS / editor junk
 Thumbs.db
